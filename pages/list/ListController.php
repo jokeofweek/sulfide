@@ -1,0 +1,1 @@
+<?php defined('APP_DIR') or die('Cannot access file.');	class ListController extends Controller {	public function doIndex() {		echo 'Now in the List controller<br/>';	}}
