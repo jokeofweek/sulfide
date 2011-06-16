@@ -35,6 +35,16 @@ abstract class Controller extends Observable {
 	protected $redirect_bad_actions = FALSE;
 	
 	/**
+	 * This variable can be overridden to change the default
+	 * action when there is no action passed as a route, or the
+	 * action passed as a route is empty.
+	 *
+	 * @access protected
+	 * @type string
+	 */
+	protected $default_action = 'index';
+	
+	/**
 	 * Function which allows you to pass a variable
 	 * to a Controller based on a key and value system. These
 	 * variables can be fetched using:
@@ -82,6 +92,16 @@ abstract class Controller extends Observable {
 	 */
 	public function getParameters() {
 		return $this->parameters;
+	}
+	
+	/**
+	 * Fetches the default action specified by {@link Controller::default_action}
+	 *
+	 * @return string
+	 *		The default action for the controller
+	 */
+	public function getDefaultAction() {
+		return $this->default_action;
 	}
 	
 	/**
@@ -254,10 +274,12 @@ class Routing extends Observable {
 	 *		/plugin
 	 *		etc..
 	 *
-	 * If the action or both the action and controller are missing, the routing engine
-	 * will use the default ones, which are held in the {@link} Config keys:
+	 * If the controller is  missing, the routing engine
+	 * will use the default one, which are held in the {@link Config} key:
 	 *		'routing' => 'default_controller'
-	 *		'routing' => 'default_action'
+	 *
+	 * If no action is defined, the routing engine will dispatch the
+	 * action defined by {@link Controller::default_action}.
 	 *
 	 * Events raised by the route function:
 	 *		requested(url) - This event is raised before a url is
@@ -284,10 +306,8 @@ class Routing extends Observable {
 			array_shift($parts); // Remove the plugin name
 		}
 		
-		// Check if we have a controller and action, and if not set
-		// to default.
+		// Check if we have a controller and if not, set to default
 		$controller = (isset($parts[0]) && $parts[0] != '') ? $parts[0] : $routingCfg['default_controller'];
-		$action = (isset($parts[1]) && $parts[1] != '') ? $parts[1] : $routingCfg['default_action'];
 		
 		// Validate the controller name to avoid any exploits
 		if (!preg_match('/^[A-Za-z0-9_.\-]+$/', $controller)) {
@@ -325,6 +345,9 @@ class Routing extends Observable {
 			self::routeError();
 			return;
 		}
+		
+		// Check if the action is defined, if not dispatch to default
+		$action = (isset($parts[1]) && $parts[1] != '') ? $parts[1] : $controller->getDefaultAction();
 		
 		$controller->setParameters(array_slice($parts,2));
 		self::getHookable()->raiseEvent('dispatching', array($controller, $action, array_slice($parts, 2)));

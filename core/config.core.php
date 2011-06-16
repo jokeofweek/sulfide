@@ -42,7 +42,6 @@ class Config {
 			 */
 			'routing' => array(
 				'default_controller' => 'home',
-				'default_action' => 'index',
 				'controller_dir' => APP_DIR.'pages'.DIRECTORY_SEPARATOR,
 				'error_controller' => 'error',
 				'error_action' => 'error',
