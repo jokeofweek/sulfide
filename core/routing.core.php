@@ -13,6 +13,28 @@ abstract class Controller extends Observable {
 	private $parameters = array();
 	
 	/**
+	 * This variable can be overridden to redirect any
+	 * erroneous action, along with the parameters, to
+	 * another action. Note that if you leave it empty,
+	 * or do not override it, the {@link Controller::dispatch}
+	 * method will call the {@link Routing::routeError}
+	 * method. You should set this to the action name, not including
+	 * the 'do'.
+	 *
+	 * Note that this can also be used to do things such as
+	 * passing parameters without passing an action. For example,
+	 * if you have a controller called posts, and you want
+	 * to be able to call /posts/2 to view the second post, you
+	 * could set this variable to the 'view' or 'list' action,
+	 * and the parameter 2 would be passed to that action along with
+	 * any other parameters.
+	 *
+	 * @access protected
+	 * @type mixed
+	 */
+	protected $redirect_bad_actions = FALSE;
+	
+	/**
 	 * Function which allows you to pass a variable
 	 * to a Controller based on a key and value system. These
 	 * variables can be fetched using:
@@ -72,17 +94,28 @@ abstract class Controller extends Observable {
 	 *		do{$action}
 	 * Where the first letter of $action is capitalized.
 	 *
-	 * Note that if there is no valid function for a given action, the
-	 * {@link Routing::routeError} method will be called.
+	 * If there is no valid function for a passed action, the method
+	 * will then check if the {@link Controller::$redirect_bad_actions}
+	 * variable has been set. If it has been, it will add the passed
+	 * action to the front of the parameter list and call the dispatch
+	 * method on the action defined by {@link Controller::$redirect_bad_actions}.
+	 * However, if it has not been overridden, the {@link Routing::routeError()}
+	 * method is called.	
 	 *
 	 * @param string $action The action to execute
 	 */
 	public function dispatch($action) {
 		$method = 'do'.ucfirst($action);
 		if (!method_exists($this, $method)){
-			Routing::routeError();
+			if ($this->redirect_bad_actions) {
+				array_unshift($this->parameters, $action);
+				$this->dispatch($this->redirect_bad_actions);
+			} else {
+				Routing::routeError();
+			}
+		} else {
+			$this->$method();
 		}
-		$this->$method();
 	}
 	
 	/**
