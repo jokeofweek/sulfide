@@ -65,7 +65,7 @@ class Database extends Observable {
 			$dbSettings = Config::get('database');
 			switch (strtolower($dbSettings['driver'])) {
 				case 'mysql':
-					$this->db = new PDO('mysql:host='.$dbSettings['host'].';dbname='.$dbSettings['databaseName'].';charset=UTF-8',
+					$this->db = new PDO('mysql:host='.$dbSettings['host'].';dbname='.$dbSettings['database_name'].';charset=UTF-8',
 									$dbSettings['username'],
 									$dbSettings['password']);
 					break;

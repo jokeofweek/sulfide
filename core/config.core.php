@@ -22,8 +22,8 @@ class Config {
 				'username' => 'root',
 				'password' => '',
 				'host' => 'localhost',
-				'databaseName' => 'cms',
-				'tablePrefixes' => '',
+				'database_name' => 'cms',
+				'table_prefixes' => '',
 				'driver' => 'mysql'
 			), 
 			
@@ -59,18 +59,31 @@ class Config {
 	
 	/**
 	 * This function will fetch a given configuration setting
-	 * based on it's setting name, or 'key'.
+	 * based on it's setting name, or 'key', or a path to a key.
 	 *
+	 * @param mixed $key 
+	 *		The function accepts a variable number of arguments,
+	 *		and can be used to drill down the configuration tree.
+	 *		For example, if you wanted to fetch the username setting
+	 *		of the database group, you would call:
+	 *				get('database', 'username');
 	 * @return The setting value if the setting is found.
 	 * @throws ConfigKeyException 
 	 *		A ConfigKeyException is thrown if there is no setting
 	 *		with the passed name.
 	 */
 	public static function get($key) {
-		if (array_key_exists($key, self::$cfg))
-			return self::$cfg[$key];
-		else
-			throw new ConfigKeyException('The configuration setting \''.$key.'\' does not exist.');
+		$keys = func_get_args();
+		$current = self::$cfg;
+		
+		foreach($keys as $key) {
+			if (is_array($current) && array_key_exists($key, $current))
+				$current = $current[$key];
+			else
+				throw new ConfigKeyException('The configuration setting \''.implode('=>', $keys).'\' does not exist.');
+		}
+		
+		return $current;
 	}
 }
 

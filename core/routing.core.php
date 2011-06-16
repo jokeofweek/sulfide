@@ -116,8 +116,7 @@ abstract class Controller extends Observable {
 		
 		// Build the path based on whether it is a plugin or not
 		if ($plugin == '') {
-			$cfg = Config::get('routing');
-			$path = $cfg['controller_dir'].$controller.$path;
+			$path = Config::get('routing', 'controller_dir').$controller.$path;
 		} else {
 			if (!Plugins::get($plugin)) {
 				throw new ControllerException('A '.__CLASS__.' object attempted to forward the action "'.
@@ -125,8 +124,7 @@ abstract class Controller extends Observable {
 											  $plugin.'", however the plugin is currently not loaded.');
 			}
 			
-			$cfg = Config::get('plugins');
-			$path = $cfg['dir'].$plugin.$path;
+			$path = Config::get('plugins', 'dir').$plugin.$path;
 		}
 		
 		if (!file_exists($path)) {
@@ -268,8 +266,7 @@ class Routing extends Observable {
 		$path = DIRECTORY_SEPARATOR.$class.'.php';
 		
 		if ($plugin) {
-			$cfg = Config::get('plugins');
-			$path = $cfg['dir'].$plugin.$path;
+			$path = Config::get('plugins', 'dir').$plugin.$path;
 		} else {
 			$path = $routingCfg['controller_dir'].$controller.$path;
 		}

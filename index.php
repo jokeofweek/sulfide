@@ -1,7 +1,7 @@
 <?php
 
 include_once('core/core.php');
-requires('database', 'i18n', 'template', 'routing', 'db.session');
+requires('database', 'i18n', 'template', 'routing');
 
 Plugins::load('eventlog');
 

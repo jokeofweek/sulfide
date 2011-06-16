@@ -32,8 +32,7 @@ require_once(CORE_DIR.'plugins.core.php');
  * @package core
  * @author Dominic Charley-Roy
  */
-function requires()
-{	
+function requires() {	
 	$includes = func_get_args();
 
 	foreach ($includes as $file) {
