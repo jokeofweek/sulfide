@@ -84,6 +84,53 @@ class Config {
 		
 		return $current;
 	}
+	
+	/**
+	 * This function allows you to add a value or array to the
+	 * Config tree, which can then be fetched using the 
+	 * {@link Config::get()} method.
+	 *
+	 * @param mixed $values
+	 *		This is the values to add to the designated path
+	 * @param mixed $path
+	 *		This is the path of keys to which the values will be 
+	 *		added. If a string is passed, it will attempt to 
+	 *		create a key based on the string in the root of the
+	 *		Config tree, and then it will add the values. If it is
+	 *		an array, it will traverse down the path, adding the values
+	 *		to the last member of the path
+	 * @throws ConfigKeyException
+	 *		This is thrown in a variety of situations. It is thrown
+	 *		if there already exists a value at the given path, either
+	 *		at the end of the path or along the way (for example, one of
+	 *		the path keys has an integer already associated with it).
+	 */
+	public static function add($values, $path) {
+		if (is_array($path)) {
+			$current = &self::$cfg;
+			
+			foreach($path as $value) {
+				if (is_array($current)) {
+					if (!array_key_exists($value, $current)) 
+						$current[$value] = array();
+					$current = &$current[$value];
+				} else {
+					throw new ConfigKeyException('The configuration values could not be added to the path \''.implode('=>', $path).'\' as one of the values in the path does not refer to an array.');
+				}
+			}
+			
+			if (empty($current)) 
+				$current = $values;
+			else
+				throw new ConfigKeyException('The configuration values could not be added to the path \''.implode('=>', $path).'\' as there were already non-array values in the path.');
+
+		} else if (is_string($path)) {
+			if (!array_key_exists($path, self::$cfg))
+				self::$cfg[$path] = $values;
+			else
+				throw new ConfigKeyException('There already exists a group of configuration settings under the key '.$path.'.');
+		}
+	}
 }
 
 /**

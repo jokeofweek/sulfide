@@ -318,6 +318,20 @@ class Plugins {
 	 *	
 	 *		class Logger extends Plugin { ... }
 	 *
+	 * Note that this function automatically loads any plugin configuration settings
+	 * to the {@link Config} object. If a config.php file is present in the plugin
+	 * folder, it will attempt to load it. Note that the config.php file must
+	 * contain the following variable:
+	 *
+	 *		$config = array(...)
+	 *
+	 * The $config array should contain all your configuration settings. These settings
+	 * will be added to the following Config key:
+	 *		'loaded_plugins' => 'plugin_name'
+	 *
+	 * The 'plugin_name' part of the key is automatically fetched from the Plugin through 
+	 * the {@link Plugin::getName()} method.
+	 *
 	 * @param string $name 
 	 *		This is the name of the plugin to be loaded. This describes both
 	 *		the directory of the plugin and the name of the class.
@@ -336,7 +350,7 @@ class Plugins {
 			throw new FileNotFoundException('No plugin.php file found for the '.$name.' plugin.');
 		}
 		
-		include_once($dir.$name.DIRECTORY_SEPARATOR.'plugin.php');
+		require_once $dir.$name.DIRECTORY_SEPARATOR.'plugin.php';
 		
 		if (!class_exists($name)) {
 			throw new PluginException('The plugin.php file for the '.$name.' plugin must contain a class named '.$name.' which must extend the Plugin class.');
@@ -349,6 +363,14 @@ class Plugins {
 		}
 		
 		self::add($obj);
+		
+		// Load any configuration options
+		if (file_exists($dir.$name.DIRECTORY_SEPARATOR.'config.php')) {
+			require_once $dir.$name.DIRECTORY_SEPARATOR.'config.php';
+			
+			if (isset($config))
+				Config::add($config, array('loaded_plugins', $obj->getName()));
+		}
 	}
 }
 
