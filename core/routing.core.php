@@ -349,8 +349,10 @@ class Routing extends Observable {
 		// Check if the action is defined, if not dispatch to default
 		$action = (isset($parts[1]) && $parts[1] != '') ? $parts[1] : $controller->getDefaultAction();
 		
-		$controller->setParameters(array_slice($parts,2));
-		self::getHookable()->raiseEvent('dispatching', array($controller, $action, array_slice($parts, 2)));
+		// Set the parameters
+		$parameters = array_slice($parts, 2);
+		$controller->setParameters($parameters);
+		self::getHookable()->raiseEvent('dispatching', array($controller, $action, $parameters));
 		$controller->dispatch($action);	
 		
 	}

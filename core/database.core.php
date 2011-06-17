@@ -41,6 +41,21 @@ class Database extends Observable {
 	}
 	
 	/**
+	 * This function defines the table prefixing function. By default,
+	 * it replaces 3 tildes ('~~~') with the table prefix defined in
+	 * the {@link Config} key :
+	 *		database => table_prefixes
+	 *
+	 * @param string $query
+	 *		The query where prefixing must be applied
+	 * @return string
+	 *		The query with prefixing applied
+	 */
+	public static function prefixTables($query) {
+		return str_replace('~~~', Config::get('database','table_prefixes'), $query);
+	}
+	
+	/**
 	 * This function is used by the factory to create a
 	 * database connection which can be used globally.
 	 *
@@ -84,9 +99,49 @@ class Database extends Observable {
 		return $this->db;
 	}
 	
-	
-	private function __construct() {
+	/**
+	 * This function facilitates querying the database by allowing
+	 * you to pass the query, and optionally arguments. The function
+	 * handles all prefixing of tables ({@link Database::prefixTables}) as well as
+	 * the appropriate method of preparing and executing the query.
+	 *
+	 * @param string $query
+	 *		This is the query to be executed
+	 * @param array $args
+	 *		This is an optional array of arguments which are based on
+	 *		positional or named parameters within the query itself.
+	 * @param boolean $args_assoc
+	 *		This is an optional parameter which you must set to true if
+	 *		you wish to use named parameters in the $args variable. If this
+	 *		is left as false, it assumes that the array pssed in $args is
+	 *		a traditionally indexe array and uses positional parameters.
+	 * @param int $fetch_style
+	 *		This is an optional parameter allowing you to specify a fetch type.
+	 *		For a list of all possible types, see the $fetch_style argument
+	 *		of the {$link PDOStatement::Fetch()} method. By default, it is set
+	 *		to PDO::FETCH_BOTH
+	 */
+	public function query($query, $args = array(), $args_assoc = FALSE, $fetch_type = PDO::FETCH_BOTH) {
+		$db = $this->getConnection();
+		
+		$query = Database::prefixTables($query);
+		
+		$stmt = $db->prepare($query);
+		
+		if (!empty($args)) {
+			if ($args_assoc)
+				foreach ($args as $key => $val)
+					$stmt->bindValue($key, $val, is_numeric($val) ? PDO::PARAM_INT : PDO::PARAM_STR);
+			else 
+				foreach ($args as $key => $val) 
+					$stmt->bindValue($key + 1, $val, is_numeric($val) ? PDO::PARAM_INT : PDO::PARAM_STR);
+		}
+		
+		$stmt->execute();
+		return $stmt->fetchAll($fetch_type);
 	}
+	
+	private function __construct() { }
 	
 	public function __destruct() {
 		if ($this->db)
