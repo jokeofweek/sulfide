@@ -294,7 +294,6 @@ class Routing extends Observable {
 	public static function route($url) {
 		self::getHookable()->raiseEvent('requested', array($url));
 		
-		$routingCfg = Config::get('routing');
 		$parts = explode('/', $url);
 		$plugin = false;
 		
@@ -307,7 +306,7 @@ class Routing extends Observable {
 		}
 		
 		// Check if we have a controller and if not, set to default
-		$controller = (isset($parts[0]) && $parts[0] != '') ? $parts[0] : $routingCfg['default_controller'];
+		$controller = (isset($parts[0]) && $parts[0] != '') ? $parts[0] : Config::get('routing', 'default_controller');
 		
 		// Validate the controller name to avoid any exploits
 		if (!preg_match('/^[A-Za-z0-9_.\-]+$/', $controller)) {
@@ -321,7 +320,7 @@ class Routing extends Observable {
 		if ($plugin) {
 			$path = Config::get('plugins', 'dir').$plugin.$path;
 		} else {
-			$path = $routingCfg['controller_dir'].$controller.$path;
+			$path = Config::get('routing', 'controller_dir').$controller.$path;
 		}
 		
 		// Check if there is a valid controller, if not route it to the error controller

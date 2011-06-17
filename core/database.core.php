@@ -14,6 +14,29 @@ class Database extends Observable {
 	
 	protected $package = 'core';
 	protected $class = 'database';
+	 
+	/** 
+	 * Internal variable containing the instance of
+	 * the database, which is lazily created.
+	 * @see Database::getFactory
+	 * @see Database::getConnection
+	 * @type PDO
+	 * @access private
+	 */
+	private $db;
+	
+	/** 
+	 * Array containing all the supported drivers
+	 * @type array
+	 * @access protected
+	 */
+	protected static $drivers = array('mysql',
+									  'pgsql',
+									  'mssql',
+									  'dblib',
+									  'sybase',
+									  'sqlite2',
+									  'sqlite3');				
 	
 	/**
 	 * Holds a singleton 'factory' which produces
@@ -23,7 +46,19 @@ class Database extends Observable {
 	 */
 	protected static $factory;
 	
-	private $db;
+	/**
+	 * Accessor method which lists all the drivers which are
+	 * compatible with the Database class. Note that if
+	 * you wish you to use the database class, the driver
+	 * specified in the {@link Config} key
+	 *		'database'=>'driver'
+	 * must be in the array returned by this function.
+	 *
+	 * @return array An array containing the names of all supported drivers 
+	 */
+	public static function getDrivers() {
+		return self::$drivers;
+	}
 	
 	/**
 	 * This function will fetch a PDO object factory, which
@@ -78,15 +113,25 @@ class Database extends Observable {
 			// Create a new database object based on the
 			// type of driver selected in the config.core.php file
 			$dbSettings = Config::get('database');
-			switch (strtolower($dbSettings['driver'])) {
+			$driver = strtolower($dbSettings['driver']);
+			// Check that a valid driver was set
+			if (!in_array($driver, self::$drivers))
+				throw new DatabaseException('An invalid database driver was selected in the configuration file.');
+			
+			switch ($driver) {
 				case 'mysql':
-					$this->db = new PDO('mysql:host='.$dbSettings['host'].';dbname='.$dbSettings['database_name'].';charset=UTF-8',
+				case 'pgsql':
+				case 'mssql':
+				case 'dblib':
+				case 'sybase':
+					$this->db = new PDO($driver.':host='.$dbSettings['host'].';dbname='.$dbSettings['database_name'].'',
 									$dbSettings['username'],
 									$dbSettings['password']);
 					break;
-				default:
-					throw new DatabaseException('An invalid database driver was selected in the configuration file.');
-					
+				case 'sqlite2':
+				case 'sqlite3':
+					$this->db = new PDO(($driver == 'sqlite3') ? 'sqlite:' : 'sqlite2:' . $dbSettings['database_name']);
+					break;
 			}
 			
 			// Notify plugins that a connection was made
