@@ -16,6 +16,13 @@ class Config {
 	public static function initialize(){
 		self::$cfg = array (
 			/*
+			 * Application specific connection settings
+			 */
+			'application' => array(
+				'name' => 'Basic Sulfide Application'
+			),
+			
+			/*
 			 * The database connection settings
 			 */
 			'database' => array(
@@ -52,7 +59,12 @@ class Config {
 			 */
 			'plugins' => array(
 				'dir' => APP_DIR.'plugins'.DIRECTORY_SEPARATOR,
-			)
+			),
+			
+			/*
+			 * Sulfide-related settings
+			 */
+			'sulfide_version' => '0.0.1'
 		);
 	}
 	
@@ -104,13 +116,20 @@ class Config {
 	 *		if there already exists a value at the given path, either
 	 *		at the end of the path or along the way (for example, one of
 	 *		the path keys has an integer already associated with it).
+	 * @throws Exception
+	 *		This broader exception is thrown if a path contains an empty
+	 *		key. For example, calling add('test', '') would throw this exception.
 	 */
 	public static function add($values, $path) {
 		if (is_array($path)) {
+			// Must add through reference
 			$current = &self::$cfg;
 			
 			foreach($path as $value) {
 				if (is_array($current)) {
+					if (empty($value))
+						throw new Exception('The configuration values could not be added to the path \''.implode('=>', $path).'\' as the path includes an empty key.');
+				
 					if (!array_key_exists($value, $current)) 
 						$current[$value] = array();
 					$current = &$current[$value];
@@ -125,11 +144,46 @@ class Config {
 				throw new ConfigKeyException('The configuration values could not be added to the path \''.implode('=>', $path).'\' as there were already non-array values in the path.');
 
 		} else if (is_string($path)) {
+			if (empty($path))
+				throw new Exception('The configuration values could not be added to the path \'\' as the path includes an empty key.');
+		
 			if (!array_key_exists($path, self::$cfg))
 				self::$cfg[$path] = $values;
 			else
 				throw new ConfigKeyException('There already exists a group of configuration settings under the key '.$path.'.');
 		}
+	}
+	
+	/**
+	 * This function will check whether a given key exists, as well as
+	 * whether a path exists. It can be safely assumed that, for any
+	 * value which returns true when passed to this function, there exists
+	 * an object which can be fetched using the {@link Config::get()} method.
+	 * 
+	 * @param mixed $keys 
+	 *		The function accepts a variable number of arguments,
+	 *		and can be used to drill down the configuration tree.
+	 *		For example, if you wanted to check whether the key 
+	 *		located at 'database' => 'credentials' => 'username'
+	 *		existed, you would do
+	 *				keyExists('database', 'credentials', 'username');
+	 *		You can also check whether a path exists in the same manner
+	 *
+	 * @returns boolean
+	 *		A boolean is returned stating whether the passed key/gorup exists
+	 *		in the configuration tree.
+	 */
+	public static function keyExists($keys) {
+		$keys = func_get_args();
+		$start = self::$cfg;
+		
+		foreach ($keys as $key)
+			if (is_array($start) && array_key_exists($key, $start))
+				$start = $start[$key];
+			else
+				return false;
+		
+		return true;
 	}
 }
 
