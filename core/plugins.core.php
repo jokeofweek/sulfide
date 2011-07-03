@@ -149,7 +149,14 @@ class Observable {
  * @author Dominic Charley-Roy
  */
 class Plugin {
+	/**
+	 * String which designates the plugin's name. This is an important
+	 * setting and must be overridden.
+	 * @access protected
+	 * @type string
+	 */
 	protected $pluginName = '';
+	
 	private $observing = array();
 
 	/**

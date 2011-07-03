@@ -39,26 +39,32 @@ class SulfideCoreTest extends UnitTestCase {
 	
 	function testRequiresSingleFile() {
 		requires('database');
-		$this->assertTrue(class_exists("Database"));
+		$this->assertTrue(in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'database.core.php', get_included_files()));
 	}
 	
 	function testRequiresMultipleFiles() {
 		requires('i18n', 'routing');
-		$this->assertTrue(class_exists("Language") && class_exists("Routing"));
+		$this->assertTrue(in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'i18n.core.php', get_included_files()) && 
+						  in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'routing.core.php', get_included_files()));
 	}
 	
 	/*
 	 * Test modular 'requires()' functionality
 	 */
-	 
-	function testRequiresLoadsAllSubmoduleFilesInTheAppropriateOrder() {
-		// TODO: This requires a working example of submodules
-	}
 
 	function testRequiresLoadsAllSubmoduleFiles() {
+		// Test that it actually loads two files
+		$this->assertFalse(in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'session.core.php', get_included_files()) || 
+						   in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'db.session.core.php', get_included_files())); 
+						   
 		$total = count(get_included_files());
 		requires('db.session');
-		$this->assertEqual($total + 2, count(get_included_files()));
+		$includes = get_included_files();
+		$this->assertEqual($total + 2, count($includes));
+		
+		// Test that it loads the submodule files in the appropriate order 
+		$this->assertTrue($includes[$total] == APP_DIR.'core'.DIRECTORY_SEPARATOR.'session.core.php'&&
+						  $includes[$total + 1] == APP_DIR.'core'.DIRECTORY_SEPARATOR.'db.session.core.php');
 	}
 	
 }
