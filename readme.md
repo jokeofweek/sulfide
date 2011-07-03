@@ -4,4 +4,4 @@ The Sulfide framework is a simple yet powerful PHP5-compliant framework which al
 
 ## Samples
 
-There are some sample applications and plugins for Sulfide available at jokeofweek/sulfide-samples.
+There are some sample applications and plugins for Sulfide available at [jokeofweek/sulfide-samples](https://www.github.com/jokeofweek/sulfide-samples).
