@@ -125,7 +125,10 @@ abstract class Controller extends Observable {
 	 * @param string $action The action to execute
 	 */
 	public function dispatch($action) {
-		$method = 'do'.ucfirst($action);
+		$action = ucfirst(strtolower($action));
+		$this->setParameter('action', $action);
+		$method = 'do'.$action;
+		
 		if (!method_exists($this, $method)){
 			if ($this->redirect_bad_actions) {
 				array_unshift($this->parameters, $action);
