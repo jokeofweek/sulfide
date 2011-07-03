@@ -1,4 +1,4 @@
-<?php
+<?php defined('APP_DIR') or die('Cannot access file.');
 
 class EventLogger extends Plugin {
 
