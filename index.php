@@ -1,7 +1,7 @@
 <?php
 
 include_once('core/core.php');
-requires('database', 'i18n', 'template', 'routing');
+requires('database', 'i18n', 'smarty.template', 'routing');
 
 Plugins::load('EventLogger');
 

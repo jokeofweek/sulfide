@@ -1,3 +1,5 @@
 /templates/cache/*.*
 
 /templates/compile/*.*
+templates/cache/*.*
+templates/compile/*.*

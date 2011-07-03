@@ -34,14 +34,33 @@ class Config {
 				'driver' => 'mysql'
 			), 
 			
-			/*
-			 * The smarty template settings
+/*
+			 * The template settings
 			 */
 			'template' => array(
-				'template_dir' => APP_DIR.'templates',
-				'cache_dir' => APP_DIR.'templates'.DIRECTORY_SEPARATOR.'cache',
-				'compile_dir' => APP_DIR.'templates'.DIRECTORY_SEPARATOR.'compile',
-				'config_dir' => APP_DIR.'core'.implode(DIRECTORY_SEPARATOR, array('core', 'ext', 'smarty'))
+				/*
+				 * General settings
+				 */ 
+				'template_dir' => './templates',
+				
+				/*
+				 * Settings for twig
+				 */
+				'twig' => array(
+					'settings' => array(
+						'strict_variables' => TRUE,
+						'cache' => APP_DIR.'templates/cache',
+					),
+					'lib_dir' => APP_DIR.implode(DIRECTORY_SEPARATOR, array('core', 'ext', 'twig')),
+				),
+				/*
+				 * Settings for smarty
+				 */
+				'smarty' => array(
+					'cache_dir' => APP_DIR.'templates/cache',
+					'compile_dir' => APP_DIR.'templates/compile',
+					'lib_dir' => APP_DIR.implode(DIRECTORY_SEPARATOR, array('core', 'ext', 'smarty')),
+				)
 			),
 			
 			/*
