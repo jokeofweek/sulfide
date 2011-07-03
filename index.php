@@ -3,9 +3,9 @@
 include_once('core/core.php');
 requires('database', 'i18n', 'template', 'routing');
 
-Plugins::load('eventlog');
+Plugins::load('EventLogger');
 
-Plugins::get('eventlog')
+Plugins::get('EventLogger')
 	->hook(Core::getHookable())
 	->hook(Database::getFactory())
 	->hook(Language::getHookable())

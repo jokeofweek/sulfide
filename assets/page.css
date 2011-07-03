@@ -1,0 +1,27 @@
+body {
+	background-color: #778899;
+}
+
+h1 {
+	color: #2f4f4f;
+	width: 100%;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #696969;
+}
+
+a {
+	color: #2f4f4f;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+#content {
+	width: 600px;
+	margin: 0px auto;
+	background-color: #d3d3d3;
+	padding: 5px 20px;
+}
