@@ -1,4 +1,0 @@
-	<BODY>
-		{$content}
-	</BODY>
-</HTML>
