@@ -57,8 +57,52 @@ function requires() {
 }
 
 /**
- * Basic Exception to specify a File I/O error
+ * This is a basic function which checks whether specified core components are already
+ * included, and if not returns false. This function can be used to denote that a 
+ * given class or file is dependent on core components, and the file should therefore
+ * handle a dependence appropriately.
+ *
+ * Note that in the case of plugins, it is against the Sulfide mindset to load core 
+ * components as they are included and excluded to the developper's discretion.
+ *
+ * @param mixed $includes
+ *		This is a variable-length parameter, allowing you to specify as many
+ *		core components as you wish. It uses the same argument naming as in
+ *		the {@link requires()} function. So for example, if you wanted to state
+ *		that a plugin depended on the database and routing class, you would
+ *		do:
+ *			depends('database', 'routing');
+ *      Note that these represent core components, which follow the naming 
+ *		convention {component}.core.php.
+ * @return boolean 
+ *		Returns a stating whether all the passed files are included or 
+ *	    not.
+ *
+ */
+function depends() {
+	$includes = func_get_args();
+	
+	foreach ($includes as $file) {
+		if (!in_array(CORE_DIR.$file.'.core.php', get_included_files())) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+/**
+ * Basic exception to specify a File I/O error
  * @package core
  * @author Dominic Charley-Roy
  */
 class FileNotFoundException extends Exception { }
+
+/**
+ * Basic exception used to specify that there was a dependency related error,
+ * such as a component not being included that a plugin is dependent on.
+ * @package core
+ * @author Dominic Charley-Roy
+ */
+
+class DependencyException extends Exception { }

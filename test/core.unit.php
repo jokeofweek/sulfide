@@ -17,6 +17,30 @@ class SulfideCoreTest extends UnitTestCase {
 	}
 	
 	/*
+	 * Test basic 'depends()' functionality
+	 */
+	
+	function testDependsHasNoArgumentsReturnsTrue() {
+		$this->assertTrue(depends());
+	}
+	
+	function testDependsReturnsTrueIfOneComponentIsPassedWhichIsIncluded() {
+		$this->assertTrue(depends('config'));
+	}
+	
+	function testDependsReturnsTrueIfAllComponentsPassedAreIncluded() {
+		$this->assertTrue(depends('config', 'plugins'));
+	}	
+	
+	function testDependsReturnsFalseIfOneComponentIsPassedWhichIsNotIncluded() {
+		$this->assertFalse(depends('i18n'));
+	}
+	
+	function testDependsReturnsFalseIfSomeComponentsAreIncludedAndSomeAreNot() {
+		$this->assertFalse(depends('config', 'routing', 'plugins'));
+	}
+
+	/*
 	 * Test basic 'requires()' functionality
 	 */
 	function testRequiresFileNotFound() {
