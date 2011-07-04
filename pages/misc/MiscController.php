@@ -2,7 +2,7 @@
 
 class MiscController extends Controller {
 
-	protected $redirect_bad_actions = 'index';
+	protected $redirectBadActions = 'index';
 	
 	public function doIndex() {
 		$fileLocation = __FILE__;

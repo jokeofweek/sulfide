@@ -34,7 +34,7 @@ class Config {
 				'driver' => 'mysql'
 			), 
 			
-/*
+			/*
 			 * The template settings
 			 */
 			'template' => array(

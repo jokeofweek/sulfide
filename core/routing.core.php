@@ -32,7 +32,7 @@ abstract class Controller extends Observable {
 	 * @access protected
 	 * @type mixed
 	 */
-	protected $redirect_bad_actions = FALSE;
+	protected $redirectBadActions = FALSE;
 	
 	/**
 	 * This variable can be overridden to change the default
@@ -42,7 +42,7 @@ abstract class Controller extends Observable {
 	 * @access protected
 	 * @type string
 	 */
-	protected $default_action = 'index';
+	protected $defaultAction = 'index';
 	
 	/**
 	 * Function which allows you to pass a variable
@@ -95,13 +95,13 @@ abstract class Controller extends Observable {
 	}
 	
 	/**
-	 * Fetches the default action specified by {@link Controller::default_action}
+	 * Fetches the default action specified by {@link Controller::defaultAction}
 	 *
 	 * @return string
 	 *		The default action for the controller
 	 */
 	public function getDefaultAction() {
-		return $this->default_action;
+		return $this->defaultAction;
 	}
 	
 	/**
@@ -115,10 +115,10 @@ abstract class Controller extends Observable {
 	 * Where the first letter of $action is capitalized.
 	 *
 	 * If there is no valid function for a passed action, the method
-	 * will then check if the {@link Controller::$redirect_bad_actions}
+	 * will then check if the {@link Controller::$redirectBadActions}
 	 * variable has been set. If it has been, it will add the passed
 	 * action to the front of the parameter list and call the dispatch
-	 * method on the action defined by {@link Controller::$redirect_bad_actions}.
+	 * method on the action defined by {@link Controller::$redirectBadActions}.
 	 * However, if it has not been overridden, the {@link Routing::routeError()}
 	 * method is called.	
 	 *
@@ -130,9 +130,9 @@ abstract class Controller extends Observable {
 		$method = 'do'.$action;
 		
 		if (!method_exists($this, $method)){
-			if ($this->redirect_bad_actions) {
+			if ($this->redirectBadActions) {
 				array_unshift($this->parameters, $action);
-				$this->dispatch($this->redirect_bad_actions);
+				$this->dispatch($this->redirectBadActions);
 			} else {
 				Routing::routeError();
 			}
@@ -282,7 +282,7 @@ class Routing extends Observable {
 	 *		'routing' => 'default_controller'
 	 *
 	 * If no action is defined, the routing engine will dispatch the
-	 * action defined by {@link Controller::default_action}.
+	 * action defined by {@link Controller::defaultAction}.
 	 *
 	 * Events raised by the route function:
 	 *		requested(url) - This event is raised before a url is
