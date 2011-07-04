@@ -382,47 +382,6 @@ class Plugins {
 }
 
 /**
- * The Core class is a singleton object which is globally available
- * and allows system events to be triggered from external code
- * through the use of the {@link Observable->raiseEvent()} function.
- *
- * @author Dominic Charley-Roy
- * @package core
- */
-class Core extends Observable {
-	protected $package = 'core';
-	protected $class = 'core';
-	
-	private static $instance;
-	
-	/**
-	 * This function fetches a hookable instance of the Core class
-	 * in order to allow {@link Observer} objects to watch the
-	 * system for any events.
-	 *
-	 * @return Observable 
-	 *		An instance of the class is returned as an Observable
-	 *		object to allow plugins to hook to the Core system.
-	 * 
-	 */
-	public static function getHookable() { 
-		if (!isset(self::$instance))
-			self::$instance = new Core();
-		return self::$instance;
-	}
-	
-	/**
-	 * Acts as a convience method which calls the internal raiseEvent
-	 * method of the Observable object.
-	 *
-	 * @see Observable::raiseEvent()
-	 */
-	public static function raise($event, array $args = NULL, $collect = FALSE)  {
-		self::getHookable()->raiseEvent($event, $args, $collect);
-	}
-}	
-
-/**
  * Exception used to specify there was a problem with Plugin functionality
  * @package core
  * @author Dominic Charley-Roy

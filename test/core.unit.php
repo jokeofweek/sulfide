@@ -16,28 +16,32 @@ class SulfideCoreTest extends UnitTestCase {
 		$this->assertTrue(class_exists("Plugin"));
 	}
 	
+	function testCoreClassExists() {
+		$this->assertTrue(class_exists("Core"));
+	}
+	
 	/*
 	 * Test basic 'depends()' functionality
 	 */
 	
 	function testDependsHasNoArgumentsReturnsTrue() {
-		$this->assertTrue(depends());
+		$this->assertTrue(Core::depends());
 	}
 	
 	function testDependsReturnsTrueIfOneComponentIsPassedWhichIsIncluded() {
-		$this->assertTrue(depends('config'));
+		$this->assertTrue(Core::depends('config'));
 	}
 	
 	function testDependsReturnsTrueIfAllComponentsPassedAreIncluded() {
-		$this->assertTrue(depends('config', 'plugins'));
+		$this->assertTrue(Core::depends('config', 'plugins'));
 	}	
 	
 	function testDependsReturnsFalseIfOneComponentIsPassedWhichIsNotIncluded() {
-		$this->assertFalse(depends('i18n'));
+		$this->assertFalse(Core::depends('i18n'));
 	}
 	
 	function testDependsReturnsFalseIfSomeComponentsAreIncludedAndSomeAreNot() {
-		$this->assertFalse(depends('config', 'routing', 'plugins'));
+		$this->assertFalse(Core::depends('config', 'routing', 'plugins'));
 	}
 
 	/*
@@ -45,7 +49,7 @@ class SulfideCoreTest extends UnitTestCase {
 	 */
 	function testRequiresFileNotFound() {
 		try {
-			requires('this-should-not-work');
+			Core::requires('this-should-not-work');
 			$this->fail();
 		} catch (FileNotFoundException $e) { 
 			$this->pass();
@@ -54,7 +58,7 @@ class SulfideCoreTest extends UnitTestCase {
 	
 	function testRequiresEmptyThrowsException() {
 		try {
-			requires('');
+			Core::requires('');
 			$this->fail();
 		} catch (Exception $e) {
 			$this->pass();
@@ -62,12 +66,12 @@ class SulfideCoreTest extends UnitTestCase {
 	}
 	
 	function testRequiresSingleFile() {
-		requires('database');
+		Core::requires('database');
 		$this->assertTrue(in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'database.core.php', get_included_files()));
 	}
 	
 	function testRequiresMultipleFiles() {
-		requires('i18n', 'routing');
+		Core::requires('i18n', 'routing');
 		$this->assertTrue(in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'i18n.core.php', get_included_files()) && 
 						  in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'routing.core.php', get_included_files()));
 	}
@@ -82,7 +86,7 @@ class SulfideCoreTest extends UnitTestCase {
 						   in_array(APP_DIR.'core'.DIRECTORY_SEPARATOR.'db.session.core.php', get_included_files())); 
 						   
 		$total = count(get_included_files());
-		requires('db.session');
+		Core::requires('db.session');
 		$includes = get_included_files();
 		$this->assertEqual($total + 2, count($includes));
 		
