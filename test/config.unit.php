@@ -1,5 +1,6 @@
 <?php
 
+include_once('check.php');
 require_once('simpletest/autorun.php');
 require_once('core/core.php');
 require_once('core/config.core.php');

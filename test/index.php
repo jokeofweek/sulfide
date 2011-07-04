@@ -1,4 +1,6 @@
 <?php
+
+include_once('check.php');
 require_once('simpletest/autorun.php');
 
 class SulfideTests extends TestSuite {
